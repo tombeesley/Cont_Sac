@@ -38,37 +38,49 @@ win = visual.Window(
 
 design = np.array([\
 [1,3],[2,3],[1,4],[2,4],\
-[3,1],[3,2],[4,1],[4,2]])
+[3,1],[3,2],[4,1],[4,2]], dtype = int)
 
-np.random.shuffle(design) # randomise the trial order
+blocks = 2
+trialArr = np.empty([0,3], dtype = int)
+for b in range(0,blocks):
+    np.random.shuffle(design) # randomise the trial order
+    newBlock = np.append(design,np.ones((8,1),dtype=int)*(b+1), axis = 1) # add block numbers
+    trialArr = np.append(trialArr, newBlock, axis = 0) 
 
-np.insert(
+#np.insert(trialArr,0,[[0]],axis = 0) # add zeros row
+
+print(trialArr)
 
 stimCols = np.array([[255,0,0],[0,255,0],[0,0,255],[255,255,0]])
-
+stimCols = np.insert(stimCols,0,0,axis=0)
 
 # create the stimuli
 fixation = visual.Circle(\
-win=win, units = "pix", pos=[0,0], radius = 20, fillColorSpace = 'rgb255', fillColor = [120,120,120])
+win=win, units = "pix", pos=[0,0], radius = 20, fillColorSpace = 'rgb255', fillColor = [120,120,120], lineWidth = 0)
 
 L_cue = visual.Circle(\
-win=win, units = "pix", pos=[-200,0], radius = 100, fillColorSpace = 'rgb255', lineWidth = 0)
+win=win, units = "pix", pos=[-200,0], radius = 100, fillColorSpace = 'rgb255', fillColor = [0,0,0], lineWidth = 0)
 
 R_cue = visual.Circle(\
-win=win, units = "pix", pos=[200,0], radius = 100, fillColorSpace = 'rgb255', lineWidth = 0)
+win=win, units = "pix", pos=[200,0], radius = 100, fillColorSpace = 'rgb255', fillColor = [0,0,0], lineWidth = 0)
 
-# draw fixation
-fixation.draw()
+for t in range(0,trialArr.shape[0]):
+    # draw fixation
+    fixation.draw()
 
-# draw left stimulus
-L_cue.fillColor = [0,255,0]
-L_cue.draw()
+    # draw left stimulus
+    L_cue.fillColor = stimCols[trialArr[t][0]]
+    L_cue.draw()
+    # draw right stimulus
+    R_cue.fillColor = stimCols[trialArr[t][1]]
+    R_cue.draw()
 
-# draw right stimulus
-#R_cue.fillColor = [0,0,255]
-#R_cue.draw()
+    win.flip()
+    core.wait(1) # stimulus duration time
+    win.flip()
+    core.wait(0.2) # ITI
 
 win.flip()
-core.wait(2)
+core.wait(1)
 
 win.close()
