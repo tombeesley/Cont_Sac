@@ -67,6 +67,8 @@ win=win, units = "pix", pos=[200,0], radius = 100, fillColorSpace = 'rgb255', fi
 for t in range(0,trialArr.shape[0]):
     # draw fixation
     fixation.draw()
+    
+    
 
     # draw left stimulus
     L_cue.fillColor = stimCols[trialArr[t][0]]
