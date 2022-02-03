@@ -80,7 +80,7 @@ win=win, pos=[200,0], colorSpace = 'rgb255', color = (220,220,220))
 L_text = visual.TextStim(\
 win=win, pos=[-200,0], colorSpace = 'rgb255', color = (220,220,220))
 
-letter_keys = np.array(['A', 'Z', 'K', 'M'], dtype = object) # response prompts/keys 
+letter_keys = np.array(['A', 'Z', 'K', 'M']).astype('U') # response prompts/keys 
 
 fb_text = visual.TextStim(\
 win=win, pos=[0,0], colorSpace = 'rgb255', color = (0,0,0))
@@ -117,9 +117,8 @@ for t in range(0,trialArr.shape[0]):
 #    win.flip()
 #    core.wait(0.2) # ITI
     
-    #key = event.waitKeys(maxWait=5,keyList=letter_keys[0:2]) # waits for either an r or b key to be pressed. If 5 seconds pass, then it moves on without a response
-    key = event.waitKeys(maxWait=5,keyList=['a','z','K', 'M'])
-    if key == corResp:
+    key = event.waitKeys(maxWait=5,keyList=np.char.lower(letter_keys[0:2]))
+    if key == np.char.lower(corResp):
         fb_text.text = "Correct"
     else:
         fb_text.text = "Incorrect"
