@@ -40,6 +40,9 @@ win = visual.Window(
 
 # design of experiment
 # cue 1 | cue 2 | cue_correct (L/R) | instruction (C/S)
+
+dataFile = "DATA\data_temp.csv" # temp data filename
+
 design = np.array([\
 [1,3,1],[2,3,1],[1,4,1],[2,4,1],\
 [3,1,2],[3,2,2],[4,1,2],[4,2,2]], dtype = int)
@@ -127,6 +130,11 @@ for t in range(0,trialArr.shape[0]):
     win.flip()
     core.wait(1)
     
+    csvRow = [t , trialArr[t][0:3]] 
+    
+    with open(dataFile, 'a', newline='') as f:
+        wr = csv.writer(f)
+        wr.writerow(csvRow)  
 
 win.flip()
 core.wait(1)
