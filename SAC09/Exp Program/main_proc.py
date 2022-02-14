@@ -154,12 +154,12 @@ for t in range(0,trialArr.shape[0]):
     R_text.text = letter_keys[1]
     R_text.draw()
 
-    win.flip()
+    stimOn = win.flip()
 #    core.wait(.5) # stimulus duration time
 #    win.flip()
 #    core.wait(0.2) # ITI
     
-    key = event.waitKeys(maxWait=5,keyList=np.char.lower(letter_keys[0:2]))
+    key = event.waitKeys(maxWait=5,keyList=np.char.lower(letter_keys[0:2]), timeStamped = stimOn)
     if key == np.char.lower(corResp):
         fb_text.text = "Correct"
     else:
@@ -169,7 +169,10 @@ for t in range(0,trialArr.shape[0]):
     win.flip()
     core.wait(1)
     
-    csvRow = [t , trialArr[t][0:3]] 
+    
+    csvRow = trialArr[t][0:3]
+    np.insert(csvRow,0,t+1) # add trial number
+    
     
     with open(dataFile, 'a', newline='') as f:
         wr = csv.writer(f)
