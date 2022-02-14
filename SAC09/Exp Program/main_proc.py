@@ -6,7 +6,7 @@ import random
 
 random.seed() # random seed based on clock
 
-winWidth = 960; winHeight = 540
+winWidth = 1440; winHeight = 810
 win = visual.Window(
     size=[winWidth, winHeight],
     units="pix",
@@ -43,18 +43,35 @@ win = visual.Window(
 
 dataFile = "DATA\data_temp.csv" # temp data filename
 
-design = np.array([\
-[1,3,1],[2,3,1],[1,4,1],[2,4,1],\
-[3,1,2],[3,2,2],[4,1,2],[4,2,2]], dtype = int)
+# STAGE 1 DESIGN
+stg1Design = np.array([\
+[1,3,1,1],[2,3,1,1],[1,4,1,1],[2,4,1,1],\
+[3,1,2,1],[3,2,2,1],[4,1,2,1],[4,2,2,1]], dtype = int)
 
-blocks = 1
-trialArr = np.empty([0,4], dtype = int)
-for b in range(0,blocks):
-    np.random.shuffle(design) # randomise the trial order
-    newBlock = np.append(design,np.ones((8,1),dtype=int)*(b+1), axis = 1) # add block numbers
+stg1blocks = 1
+trialArr = np.empty([0,5], dtype = int)
+for b in range(0,stg1blocks):
+    np.random.shuffle(stg1Design) # randomise the trial order
+    newBlock = np.append(stg1Design,np.ones((8,1),dtype=int)*(b+1), axis = 1) # add block numbers
     trialArr = np.append(trialArr, newBlock, axis = 0) 
 
-#np.insert(trialArr,0,[[0]],axis = 0) # add zeros row
+
+
+# STAGE 2 DESIGN
+stg2Design = np.array([\
+[1,3,1,1],[2,3,1,1],[1,4,1,1],[2,4,1,1],\
+[1,3,2,2],[2,3,2,2],[1,4,2,2],[2,4,2,2],
+[3,1,2,1],[3,2,2,1],[4,1,2,1],[4,2,2,1],
+[3,1,1,2],[3,2,1,2],[4,1,1,2],[4,2,1,2]], dtype = int)
+
+stg2blocks = 1
+#trialArr = np.empty([0,5], dtype = int)
+for b in range(0,stg2blocks):
+    np.random.shuffle(stg2Design) # randomise the trial order
+    newBlock = np.append(stg2Design,np.ones((16,1),dtype=int)*(b+1), axis = 1) # add block numbers
+    trialArr = np.append(trialArr, newBlock, axis = 0) 
+
+stg2instAt = stg1blocks*8
 
 print(trialArr)
 
@@ -63,25 +80,31 @@ stimCols = np.insert(stimCols,0,0,axis=0)
 
 # create the stimuli
 fixation = visual.Circle(\
-win=win, pos=[0,0], radius = 20, fillColorSpace = 'rgb255', fillColor = [120,120,120], lineWidth = 0)
+win=win, pos=[0,0], radius = 10, edges = 128, fillColorSpace = 'rgb255', fillColor = [255,255,255], lineWidth = 0)
+
+instCircle = visual.Circle(\
+win=win, pos=[0,0], radius = 40, edges = 128, fillColorSpace = 'rgb255', fillColor = [120,120,120], lineWidth = 0)
+
+instSquare = visual.Rect(\
+win=win, pos=[0,0], size = 80, fillColorSpace = 'rgb255', fillColor = [120,120,120], lineWidth = 0)
 
 L_cue = visual.Circle(\
-win=win, pos=[-200,0], radius = 100, fillColorSpace = 'rgb255', fillColor = [0,0,0], lineWidth = 0)
+win=win, pos=[-400,0], radius = 100, edges = 128, fillColorSpace = 'rgb255', fillColor = [0,0,0], lineWidth = 0)
 
 R_cue = visual.Circle(\
-win=win, pos=[200,0], radius = 100, fillColorSpace = 'rgb255', fillColor = [0,0,0], lineWidth = 0)
+win=win, pos=[400,0], radius = 100, edges = 128, fillColorSpace = 'rgb255', fillColor = [0,0,0], lineWidth = 0)
 
 R_text_background = visual.Rect(\
-win=win, pos=[200,0], size = 30, fillColorSpace = 'rgb255', fillColor = [255,255,255])
+win=win, pos=[400,0], size = 40, fillColorSpace = 'rgb255', fillColor = [255,255,255])
 
 L_text_background = visual.Rect(\
-win=win, pos=[-200,0], size = 30, fillColorSpace = 'rgb255', fillColor = [255,255,255])
+win=win, pos=[-400,0], size = 40, fillColorSpace = 'rgb255', fillColor = [255,255,255])
 
 R_text = visual.TextStim(\
-win=win, pos=[200,0], colorSpace = 'rgb255', color = (220,220,220))
+win=win, pos=[400,0], colorSpace = 'rgb255', color = (220,220,220))
 
 L_text = visual.TextStim(\
-win=win, pos=[-200,0], colorSpace = 'rgb255', color = (220,220,220))
+win=win, pos=[-400,0], colorSpace = 'rgb255', color = (220,220,220))
 
 letter_keys = np.array(['A', 'Z', 'K', 'M']).astype('U') # response prompts/keys 
 
@@ -92,10 +115,26 @@ for t in range(0,trialArr.shape[0]):
     
     np.random.shuffle(letter_keys) # shuffle the response keys
     
+    if t == stg2instAt:
+        instText = visual.TextStim(win=win, pos=[0,0], colorSpace = 'rgb255', color = (0,0,0))
+        instText.text = "Instructions for Stage 2 here"
+        instText.draw()
+        win.flip()
+        core.wait(3)
+    
     # draw fixation
     fixation.draw()
     win.flip()
-    core.wait(.5)
+    core.wait(1)
+    
+    # draw instruction + fixation
+    if trialArr[t][3] == 1: # circle instruction
+        instCircle.draw()
+    elif trialArr[t][3] == 2:
+        instSquare.draw() 
+    fixation.draw() # overlay fixation stimulus
+    win.flip()
+    core.wait(1)
     
     if trialArr[t][2] == 1: # if left cue is P
         corResp = letter_keys[0] 
