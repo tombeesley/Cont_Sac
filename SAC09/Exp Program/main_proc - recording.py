@@ -20,13 +20,10 @@ if runET == 1:
 
     def gaze_data_callback(gaze_data):
         # Print gaze points of left and right eye
-        print("Left eye: ({gaze_left_eye}) \t Right eye: ({gaze_right_eye})".format(
+        #print("Left eye: ({gaze_left_eye}) \t Right eye: ({gaze_right_eye})".format(
             gaze_left_eye=gaze_data['left_gaze_point_on_display_area'],
             gaze_right_eye=gaze_data['right_gaze_point_on_display_area']))
-        # with open('tempcsvfile.csv', 'w') as f:  # You will need 'wb' mode in Python 2.x
-            # w = csv.DictWriter(f, gaze_data.keys())
-            # w.writeheader()
-            # w.writerow(gaze_data)
+
 
 random.seed() # random seed based on clock
 
@@ -207,6 +204,11 @@ for t in range(0,trialArr.shape[0]):
 
 # turn eye-tracker off
 if runET == 1: my_eyetracker.unsubscribe_from(tr.EYETRACKER_GAZE_DATA, gaze_data_callback)
+
+with open('tempcsvfile.csv', 'w') as f:  # You will need 'wb' mode in Python 2.x
+    w = csv.DictWriter(f, gaze_data.keys())
+    w.writeheader()
+    w.writerow(gaze_data)
 
 win.flip()
 core.wait(1)
